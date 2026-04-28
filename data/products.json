@@ -1,0 +1,222 @@
+[
+    {
+        "id": 1,
+        "category": "SmartPhone",
+        "name": "Apple iPad Mini G2356",
+        "image": "img/product-1.png",
+        "is_new": true,
+        "old_price": 1250.0,
+        "current_price": 1050.0,
+        "rating": 4,
+        "wow_delay": "0.1s"
+    },
+    {
+        "id": 2,
+        "category": "Laptop",
+        "name": "MacBook Air M2",
+        "image": "img/product-2.png",
+        "is_new": true,
+        "old_price": 1199.0,
+        "current_price": 999.0,
+        "rating": 5,
+        "wow_delay": "0.2s"
+    },
+    {
+        "id": 3,
+        "category": "Watch",
+        "name": "Samsung Galaxy Watch 6",
+        "image": "img/product-3.png",
+        "is_new": false,
+        "old_price": 349.0,
+        "current_price": 299.0,
+        "rating": 4,
+        "wow_delay": "0.3s"
+    },
+    {
+        "id": 4,
+        "category": "Audio",
+        "name": "Sony WH-1000XM5",
+        "image": "img/product-4.png",
+        "is_new": true,
+        "old_price": 399.0,
+        "current_price": 348.0,
+        "rating": 5,
+        "wow_delay": "0.4s"
+    },
+    {
+        "id": 5,
+        "category": "SmartPhone",
+        "name": "Google Pixel 8 Pro",
+        "image": "img/product-5.png",
+        "is_new": true,
+        "old_price": 999.0,
+        "current_price": 899.0,
+        "rating": 4,
+        "wow_delay": "0.5s"
+    },
+    {
+        "id": 6,
+        "category": "Camera",
+        "name": "Fujifilm X-T5 Mirrorless",
+        "image": "img/product-6.png",
+        "is_new": false,
+        "old_price": 1799.0,
+        "current_price": 1699.0,
+        "rating": 5,
+        "wow_delay": "0.1s"
+    },
+    {
+        "id": 7,
+        "category": "Gaming",
+        "name": "PlayStation 5 Console",
+        "image": "img/product-7.png",
+        "is_new": false,
+        "old_price": 549.0,
+        "current_price": 499.0,
+        "rating": 5,
+        "wow_delay": "0.2s"
+    },
+    {
+        "id": 8,
+        "category": "Tablet",
+        "name": "Samsung Galaxy Tab S9",
+        "image": "img/product-8.png",
+        "is_new": true,
+        "old_price": 899.0,
+        "current_price": 749.0,
+        "rating": 4,
+        "wow_delay": "0.3s"
+    },
+    {
+        "id": 9,
+        "category": "Audio",
+        "name": "Bose QuietComfort Ultra",
+        "image": "img/product-9.png",
+        "is_new": true,
+        "old_price": 429.0,
+        "current_price": 379.0,
+        "rating": 5,
+        "wow_delay": "0.4s"
+    },
+    {
+        "id": 10,
+        "category": "SmartPhone",
+        "name": "iPhone 15 Pro Max",
+        "image": "img/product-10.png",
+        "is_new": true,
+        "old_price": 1299.0,
+        "current_price": 1199.0,
+        "rating": 5,
+        "wow_delay": "0.5s"
+    },
+    {
+        "id": 11,
+        "category": "Laptop",
+        "name": "Dell XPS 13 Plus",
+        "image": "img/product-11.png",
+        "is_new": false,
+        "old_price": 1499.0,
+        "current_price": 1249.0,
+        "rating": 4,
+        "wow_delay": "0.1s"
+    },
+    {
+        "id": 12,
+        "category": "Accessories",
+        "name": "Logitech MX Master 3S",
+        "image": "img/product-12.png",
+        "is_new": false,
+        "old_price": 99.0,
+        "current_price": 89.0,
+        "rating": 5,
+        "wow_delay": "0.2s"
+    },
+    {
+        "id": 13,
+        "category": "Monitor",
+        "name": "Samsung Odyssey G7",
+        "image": "img/product-13.png",
+        "is_new": true,
+        "old_price": 699.0,
+        "current_price": 549.0,
+        "rating": 4,
+        "wow_delay": "0.3s"
+    },
+    {
+        "id": 14,
+        "category": "SmartPhone",
+        "name": "OnePlus 12 5G",
+        "image": "img/product-14.png",
+        "is_new": true,
+        "old_price": 799.0,
+        "current_price": 699.0,
+        "rating": 4,
+        "wow_delay": "0.4s"
+    },
+    {
+        "id": 15,
+        "category": "Gaming",
+        "name": "Nintendo Switch OLED",
+        "image": "img/product-15.png",
+        "is_new": false,
+        "old_price": 349.0,
+        "current_price": 319.0,
+        "rating": 5,
+        "wow_delay": "0.5s"
+    },
+    {
+        "id": 16,
+        "category": "Audio",
+        "name": "AirPods Pro Gen 2",
+        "image": "img/product-16.png",
+        "is_new": false,
+        "old_price": 249.0,
+        "current_price": 199.0,
+        "rating": 5,
+        "wow_delay": "0.1s"
+    },
+    {
+        "id": 17,
+        "category": "Storage",
+        "name": "SanDisk 2TB Extreme SSD",
+        "image": "img/product-17.png",
+        "is_new": true,
+        "old_price": 220.0,
+        "current_price": 169.0,
+        "rating": 4,
+        "wow_delay": "0.2s"
+    },
+    {
+        "id": 18,
+        "category": "Drones",
+        "name": "DJI Mini 4 Pro",
+        "image": "img/product-18.png",
+        "is_new": true,
+        "old_price": 759.0,
+        "current_price": 759.0,
+        "rating": 5,
+        "wow_delay": "0.3s"
+    },
+    {
+        "id": 19,
+        "category": "Laptop",
+        "name": "ASUS ROG Zephyrus G14",
+        "image": "img/product-19.png",
+        "is_new": false,
+        "old_price": 1599.0,
+        "current_price": 1399.0,
+        "rating": 5,
+        "wow_delay": "0.4s"
+    },
+    {
+        "id": 20,
+        "category": "20 Smart Home",
+        "name": "Amazon Echo Show 10",
+        "image": "img/product-20.png",
+        "is_new": false,
+        "old_price": 249.0,
+        "current_price": 219.0,
+        "rating": 4,
+        "wow_delay": "0.5s"
+    }
+]
