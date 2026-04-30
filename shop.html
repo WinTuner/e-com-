@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="data:,">
     <meta charset="utf-8">
     <title>Electro - Electronics Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -135,9 +136,12 @@
                             class="rounded-circle btn-md-square border"><i class="fas fa-random"></i></i></a>
                     <a href="#" class="text-muted d-flex align-items-center justify-content-center me-3"><span
                             class="rounded-circle btn-md-square border"><i class="fas fa-heart"></i></a>
-                    <a href="#" class="text-muted d-flex align-items-center justify-content-center"><span
-                            class="rounded-circle btn-md-square border"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="text-dark ms-2">$0.00</span></a>
+                    <a href="cart.html" class="text-muted d-flex align-items-center justify-content-center">
+                        <span class="rounded-circle btn-md-square border">
+                            <i class="fas fa-shopping-cart"></i>
+                        </span>
+                        <span id="cart-total-qty" class="text-dark ms-2">0 ชิ้น</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -268,7 +272,12 @@
 
     <!-- Single Page Header start -->
     <div class="container-fluid page-header py-5">
-        <h1 class="text-center text-white display-6 wow fadeInUp" data-wow-delay="0.1s">Shop Page</h1>
+        <h1 class="text-center text-white display-6 wo                        
+<a href="javascript:void(0)" 
+   class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" 
+   data-id="${product.id}">
+    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+</a>w fadeInUp" data-wow-delay="0.1s">Shop Page</h1>
         <ol class="breadcrumb justify-content-center mb-0 wow fadeInUp" data-wow-delay="0.3s">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Pages</a></li>
@@ -636,9 +645,12 @@
                             class="rounded-circle btn-md-square border"><i class="fas fa-random"></i></i></a>
                     <a href="#" class="text-muted d-flex align-items-center justify-content-center me-3"><span
                             class="rounded-circle btn-md-square border"><i class="fas fa-heart"></i></a>
-                    <a href="#" class="text-muted d-flex align-items-center justify-content-center"><span
-                            class="rounded-circle btn-md-square border"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="text-dark ms-2">$0.00</span></a>
+                    <a href="cart.html" class="text-muted d-flex align-items-center justify-content-center">
+                        <span class="rounded-circle btn-md-square border">
+                            <i class="fas fa-shopping-cart"></i>
+                        </span>
+                        <span id="cart-total-qty" class="text-dark ms-2">0 ชิ้น</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -779,9 +791,12 @@
                             class="rounded-circle btn-md-square border"><i class="fas fa-random"></i></i></a>
                     <a href="#" class="text-muted d-flex align-items-center justify-content-center me-3"><span
                             class="rounded-circle btn-md-square border"><i class="fas fa-heart"></i></a>
-                    <a href="#" class="text-muted d-flex align-items-center justify-content-center"><span
-                            class="rounded-circle btn-md-square border"><i class="fas fa-shopping-cart"></i></span>
-                        <span class="text-dark ms-2">$0.00</span></a>
+                    <a href="cart.html" class="text-muted d-flex align-items-center justify-content-center">
+                        <span class="rounded-circle btn-md-square border">
+                            <i class="fas fa-shopping-cart"></i>
+                        </span>
+                        <span id="cart-total-qty" class="text-dark ms-2">0 ชิ้น</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -2000,7 +2015,12 @@
                                                         <a href="#"><i class="fa fa-eye fa-1x text-white"></i></a>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div>                        
+<a href="javascript:void(0)" 
+   class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" 
+   data-id="${product.id}">
+    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+</a>
                                             <div class="col-7">
                                                 <div class="products-mini-content p-3">
                                                     <a href="#" class="d-block mb-2">SmartPhone</a>
@@ -2283,7 +2303,12 @@
                     <div class="footer-item d-flex flex-column">
                         <h4 class="text-primary mb-4">Information</h4>
                         <a href="#" class=""><i class="fas fa-angle-right me-2"></i> About Us</a>
-                        <a href="#" class=""><i class="fas fa-angle-right me-2"></i> Delivery infomation</a>
+                        <a href="#" class=""><i class="fas fa-angle-right                        
+<a href="javascript:void(0)" 
+   class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" 
+   data-id="${product.id}">
+    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+</a> me-2"></i> Delivery infomation</a>
                         <a href="#" class=""><i class="fas fa-angle-right me-2"></i> Privacy Policy</a>
                         <a href="#" class=""><i class="fas fa-angle-right me-2"></i> Terms & Conditions</a>
                         <a href="#" class=""><i class="fas fa-angle-right me-2"></i> Warranty</a>
@@ -2345,8 +2370,10 @@
     
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script src="js/cart-sync.js"></script>
 
     <script>
+
 let allProducts = []; // ตัวแปรเก็บข้อมูลดิบทั้งหมดจาก JSON
 
 // 1. ฟังก์ชันโหลดข้อมูล (Fetch Data)
@@ -2414,7 +2441,10 @@ function renderUI(products) {
                 <div class="product-item rounded wow fadeInUp" data-wow-delay="${product.wow_delay}">
                     <div class="product-item-inner border rounded">
                         <div class="product-item-inner-item">
-                            <img src="${product.image}" class="img-fluid w-100 rounded-top" alt="${product.name}">
+                            <img src="${product.image}" 
+     class="img-fluid w-100 rounded-top" 
+     alt="${product.name}"
+     onerror="this.onerror=null;this.src='https://via.placeholder.com/400x400?text=No+Image';">
                             ${product.is_new ? '<div class="product-new">New</div>' : ''}
                             <div class="product-details">
                                 <a href="#"><i class="fa fa-eye fa-1x"></i></a>
@@ -2428,9 +2458,11 @@ function renderUI(products) {
                         </div>
                     </div>
                     <div class="product-item-add border border-top-0 rounded-bottom text-center p-4 pt-0">
-                        <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4">
-                            <i class="fas fa-shopping-cart me-2"></i> Add To Cart
-                        </a>
+<a href="javascript:void(0)" 
+   class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" 
+   data-id="${product.id}">
+    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+</a>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex">${stars}</div>
                             <div class="d-flex">
@@ -2458,7 +2490,15 @@ function resetFilter() {
 
 // ผูก Event ต่างๆ เมื่อโหลดหน้าเสร็จ
 document.addEventListener('DOMContentLoaded', () => {
+    // ดึงข้อมูลเก่าจาก LocalStorage ถ้ามี
+    const savedCart = localStorage.getItem('shopping_cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartUI(); // อัปเดตตัวเลขบน UI ทันที
+    }
+
     loadProducts('./data/products.json');
+
 
     // ค้นหาแบบ Real-time ขณะพิมพ์
     document.getElementById('searchInput').addEventListener('input', filterProducts);
@@ -2466,6 +2506,90 @@ document.addEventListener('DOMContentLoaded', () => {
     // เปลี่ยนหมวดหมู่แล้วกรองทันที
     document.getElementById('categorySelect').addEventListener('change', filterProducts);
 });
+
+
+// ตัวแปรเก็บข้อมูลในตะกร้า
+
+let cart = [];
+
+
+const catalog = document.querySelector('#products-container');
+
+catalog.addEventListener('click', function(event) {
+    // ตรวจสอบว่าสิ่งที่ถูกคลิก หรือตัวแม่ที่ใกล้ที่สุดของสิ่งที่คลิก มี class 'add-to-cart' หรือไม่
+    const btn = event.target.closest('.add-to-cart');
+
+    if (btn) {
+        // ป้องกัน Browser รีเฟรชหน้า (ในกรณีใช้แท็ก <a>)
+        event.preventDefault();
+        
+        // 2. Grab the data-id attribute (Product ID)
+        // Attribute นี้เก็บ ID ของสินค้าที่ต้องการเพิ่ม
+        const productId = parseInt(btn.getAttribute('data-id'));
+        
+        // ส่ง ID ไปเข้าฟังก์ชันจัดการ Logic ตะกร้า
+        handleAddToCart(productId);
+    }
+});
+
+
+// ฟังก์ชันอัปเดต UI และบันทึกข้อมูล (Core Persistence)
+function updateCartUI() {
+    // 1. คำนวณจำนวนชิ้นทั้งหมด (Sum of quantity)
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    // 2. หา Element ที่เราต้องการแสดงจำนวนชิ้น
+    const qtyDisplays = document.querySelectorAll('#cart-total-qty');
+    
+    qtyDisplays.forEach((qtyDisplay) => {
+        // เปลี่ยนการแสดงผลเป็นจำนวนชิ้น
+        qtyDisplay.innerText = `${totalQty} ชิ้น`;
+    });
+
+    // 3. บันทึกลง LocalStorage (Persistence)
+    localStorage.setItem('shopping_cart', JSON.stringify(cart));
+    
+    // Debug ดูค่าในตาราง
+    console.table(cart);
+}
+
+// Handler สำหรับเพิ่มสินค้า
+function handleAddToCart(productId) {
+    const existingItem = cart.find(item => item.id === productId);
+    const productInfo = allProducts.find(p => p.id === productId);
+
+    if (existingItem) {
+        // [YES] -> Increment quantity
+        existingItem.quantity += 1;
+    } else if (productInfo) {
+        // [NO] -> Push new object with quantity = 1
+        cart.push({
+            id: productInfo.id,
+            name: productInfo.name,
+            price: productInfo.current_price,
+            image: productInfo.image,
+            quantity: 1
+        });
+    }
+
+    // แจ้งเตือน User เล็กน้อย
+    if (productInfo) alert(`เพิ่ม ${productInfo.name} ลงตะกร้าแล้ว`);
+    
+    updateCartUI();
+}
+
+// โหลดข้อมูลเมื่อเปิดหน้าเว็บ (Retrieve Persistence)
+document.addEventListener('DOMContentLoaded', () => {
+    const savedCart = localStorage.getItem('shopping_cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartUI();
+    }
+    
+    // โหลดสินค้าจาก JSON
+    loadProducts('./data/products.json');
+});
+
 
     </script>
 
