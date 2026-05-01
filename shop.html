@@ -2377,7 +2377,8 @@
 let allProducts = []; // ตัวแปรเก็บข้อมูลดิบทั้งหมดจาก JSON
 
 // 1. ฟังก์ชันโหลดข้อมูล (Fetch Data)
-async function loadProducts(url) {
+async function loadProducts() {
+    const url = 'http://localhost:3000/api/products';
     const container = document.querySelector('#products-container');
     try {
         const response = await fetch(url);
@@ -2587,7 +2588,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // โหลดสินค้าจาก JSON
-    loadProducts('./data/products.json');
+    loadProducts();
 });
 
 
