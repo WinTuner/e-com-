@@ -1,16 +1,26 @@
-const fs = require('fs').promises;
-const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./electro.db');
 
-// กำหนด Path ของไฟล์ JSON
-const dataPath = path.join(__dirname, '../data/products.json');
-
-const getAllProducts = async () => {
-    try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        throw new Error('Error reading products data');
-    }
+// แปลง Callback ของ SQLite เป็น Promise เพื่อใช้กับ async/await
+const getProductsByCategory = (category) => {
+    return new Promise((resolve, reject) => {
+        // Fetch data from Database
+        const sql = `SELECT * FROM products WHERE category = ?`;
+        db.all(sql, [category], (err, rows) => {
+            if (err) reject(err);
+            resolve(rows); // Return Package
+        });
+    });
 };
 
-module.exports = { getAllProducts };
+const getAllProducts = () => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM products`;
+        db.all(sql, [], (err, rows) => {
+            if (err) reject(err);
+            resolve(rows);
+        });
+    });
+};
+
+module.exports = { getProductsByCategory, getAllProducts };
