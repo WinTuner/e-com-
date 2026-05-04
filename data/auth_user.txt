@@ -1,0 +1,11 @@
+Email (Username),Password (Plaintext),First Name
+natto.dev@example.com,123456,Natto
+somchai.s@cmu.ac.th,password,Somchai
+jane.doe@electro.io,mypassword,Jane
+it_support@cachyos.org,pass1234,Somsak
+devops_guy@linux.com,12345,Vichai
+tester01@gmail.com,123,Ananya
+fullstack.dev@camt.cmu,electro2026,Peerawat
+customer.care@shoppy.th,111111,Kanya
+admin_electro@internal.com,admin,Admin
+guest_user@web.com,guest,Guest

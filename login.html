@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electro - Login</title>
+    <!-- โหลด Bootstrap และ CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- 1. ส่วนของ UI (HTML DOM) ต้องอยู่ด้านบน -->
+    <div class="container vh-100 d-flex align-items-center justify-content-center">
+        <div class="card p-4 shadow-lg" style="width: 400px; border-radius: 15px;">
+            <h2 class="text-center text-primary mb-4"><i class="fas fa-shopping-bag me-2"></i>Electro</h2>
+            
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Email address</label>
+                    <input type="email" id="email" class="form-control rounded-pill" required placeholder="natto.dev@example.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control rounded-pill" required placeholder="123456">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 mt-3">Login</button>
+            </form>
+            
+            <div id="message" class="mt-3 text-center fw-bold text-danger small"></div>
+        </div>
+    </div>
+
+    <!-- 2. ส่วนของ Script ต้องอยู่ด้านล่างสุด (ก่อนปิดแท็บ body) เพื่อให้วาด HTML เสร็จก่อน -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+            
+            // ล้างข้อความ Error เดิมก่อนเริ่ม
+            msg.innerText = "กำลังเข้าสู่ระบบ...";
+            msg.classList.replace('text-danger', 'text-secondary');
+            console.log("🚀 1. เริ่มส่งข้อมูล Login:", email);
+
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                console.log("📦 2. สถานะที่ได้รับจาก Server:", response.status);
+                const result = await response.json();
+                console.log("📄 3. ข้อมูลที่ได้รับจาก Server:", result);
+
+                if (response.ok) {
+                    // ดึงชื่อ User ออกมา
+                    const userName = result.user ? result.user.firstName : "User";
+                    
+                    console.log("✅ 4. ล็อกอินสำเร็จ กำลังบันทึกข้อมูล...");
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('user_name', userName);
+                    
+                    console.log("🔄 5. กำลังพาไปหน้า shop.html...");
+                    msg.classList.replace('text-secondary', 'text-success');
+                    msg.innerText = "เข้าสู่ระบบสำเร็จ! กำลังเปลี่ยนหน้า...";
+                    
+                    // เปลี่ยนหน้า
+                    window.location.href = 'shop.html'; 
+                } else {
+                    console.warn("⚠️ ล็อกอินไม่ผ่าน:", result.message);
+                    msg.classList.replace('text-secondary', 'text-danger');
+                    msg.innerText = result.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+                    document.getElementById('password').value = ''; // เคลียร์ช่องรหัสผ่าน
+                }
+            } catch (err) {
+                console.error("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ:", err);
+                msg.classList.replace('text-secondary', 'text-danger');
+                msg.innerText = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ ลองเช็คว่า Server รันอยู่หรือไม่";
+            }
+        });
+    </script>
+</body>
+</html>

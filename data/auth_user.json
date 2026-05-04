@@ -1,0 +1,63 @@
+[
+  {
+    "username": "natto.dev@example.com",
+    "password_hash": "e10adc3949ba59abbe56e057f20f883e",
+    "first_name": "Natto",
+    "reg_date": "2026-04-10"
+  },
+  {
+    "username": "somchai.s@cmu.ac.th",
+    "password_hash": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "first_name": "Somchai",
+    "reg_date": "2026-04-15"
+  },
+  {
+    "username": "jane.doe@electro.io",
+    "password_hash": "7c4a8d09ca3762af61e59520943dc264",
+    "first_name": "Jane",
+    "reg_date": "2026-04-20"
+  },
+  {
+    "username": "it_support@cachyos.org",
+    "password_hash": "1a1dc91c907325c69271ddf0c944bc72",
+    "first_name": "Somsak",
+    "reg_date": "2026-04-22"
+  },
+  {
+    "username": "devops_guy@linux.com",
+    "password_hash": "827ccb0eea8a706c4c34a16891f84e7b",
+    "first_name": "Vichai",
+    "reg_date": "2026-04-25"
+  },
+  {
+    "username": "tester01@gmail.com",
+    "password_hash": "202cb962ac59075b964b07152d234b70",
+    "first_name": "Ananya",
+    "reg_date": "2026-04-28"
+  },
+  {
+    "username": "fullstack.dev@camt.cmu",
+    "password_hash": "469e9652e32c77ad9195e4d161658a5e",
+    "first_name": "Peerawat",
+    "reg_date": "2026-05-01"
+  },
+  {
+    "username": "customer.care@shoppy.th",
+    "password_hash": "96e79218965eb72c92a549dd5a330112",
+    "first_name": "Kanya",
+    "reg_date": "2026-05-02"
+  },
+  {
+    "username": "admin_electro@internal.com",
+    "password_hash": "21232f297a57a5a743894a0e4a801fc3",
+    "first_name": "Admin",
+    "reg_date": "2026-05-03"
+  },
+  {
+    "username": "guest_user@web.com",
+    "password_hash": "084e0343a0486ff05530df6c705c8bb9",
+    "first_name": "Guest",
+    "reg_date": "2026-05-04"
+  }
+  
+]
