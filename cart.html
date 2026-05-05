@@ -31,7 +31,8 @@
     <link href="css/style.css" rel="stylesheet">
 </head>
 
-<body>
+<tbody id="cart-item-container">
+    <!-- สินค้าจาก LocalStorage จะถูกวาดลงตรงนี้ -->
 
     <!-- Spinner Start -->
     <div id="spinner"
@@ -136,7 +137,7 @@
                         <span id="cart-total-qty" class="text-dark ms-2">0 ชิ้น</span>
                     </a>
                 </div>
-            </div>
+            </div>total
         </div>
     </div>
     <!-- Topbar End -->
@@ -289,119 +290,25 @@
                             <th scope="col">Handle</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    
+                    <!-- ✅ ใส่ id ตรงนี้ และปล่อยข้างในให้ว่างเปล่า เพื่อให้ JS วาดสินค้า 1 ชิ้นลงมาให้ -->
+                    <tbody id="cart-item-container">
                         <tr>
-                            <th scope="row">
-                                <p class="mb-0 py-4">Apple iPad Mini</p>
-                            </th>
-                            <td>
-                                <p class="mb-0 py-4">G2356</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td>
-                                <div class="input-group quantity py-4" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm text-center border-0"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td class="py-4">
-                                <button class="btn btn-md rounded-circle bg-light border">
-                                    <i class="fa fa-times text-danger"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                <p class="mb-0 py-4">Apple iPad Mini</p>
-                            </th>
-                            <td>
-                                <p class="mb-0 py-4">G2356</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td>
-                                <div class="input-group quantity py-4" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm text-center border-0"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td class="py-4">
-                                <button class="btn btn-md rounded-circle bg-light border">
-                                    <i class="fa fa-times text-danger"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                <p class="mb-0 py-4">Apple iPad Mini</p>
-                            </th>
-                            <td>
-                                <p class="mb-0 py-4">G2356</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td>
-                                <div class="input-group quantity py-4" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm text-center border-0"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="mb-0 py-4">2.99 $</p>
-                            </td>
-                            <td class="py-4">
-                                <button class="btn btn-md rounded-circle bg-light border">
-                                    <i class="fa fa-times text-danger"></i>
-                                </button>
+                            <td colspan="6" class="text-center py-5">
+                                Loading Cart...
                             </td>
                         </tr>
                     </tbody>
+                    <!-- จบส่วนที่แก้ไข -->
+
                 </table>
             </div>
+            
             <div class="mt-5">
                 <input type="text" class="border-0 border-bottom rounded me-5 py-3 mb-4" placeholder="Coupon Code">
                 <button class="btn btn-primary rounded-pill px-4 py-3" type="button">Apply Coupon</button>
             </div>
+        
             <div class="row g-4 justify-content-end">
                 <div class="col-8"></div>
                 <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
@@ -409,24 +316,22 @@
                         <div class="p-4">
                             <h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
                             <div class="d-flex justify-content-between mb-4">
-                                <h5 class="mb-0 me-4">Subtotal:</h5>
-                                <p class="mb-0">$96.00</p>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <h5 class="mb-0 me-4">Shipping</h5>
-                                <div>
-                                    <p class="mb-0">Flat rate: $3.00</p>
-                                </div>
-                            </div>
-                            <p class="mb-0 text-end">Shipping to Ukraine.</p>
-                        </div>
-                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                            <h5 class="mb-0 ps-4 me-4">Total</h5>
-                            <p class="mb-0 pe-4">$99.00</p>
-                        </div>
-                        <button class="btn btn-primary rounded-pill px-4 py-3 text-uppercase mb-4 ms-4"
-                            type="button">Proceed Checkout</button>
-                    </div>
+    <h5 class="mb-0 me-4">Subtotal:</h5>
+    <p class="mb-0" id="cart-subtotal">$0.00</p>
+</div>
+<div class="d-flex justify-content-between">
+    <h5 class="mb-0 me-4">Shipping</h5>
+    <div>
+        <p class="mb-0">Flat rate: $3.00</p>
+    </div>
+</div>
+<!-- ... -->
+<div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+    <h5 class="mb-0 ps-4 me-4">Total</h5>
+    <p class="mb-0 pe-4 text-primary fw-bold" id="cart-total">$3.00</p>
+</div>
+<!-- อย่าลืมแก้ลิงก์ปุ่ม Proceed Checkout ให้ไปหน้า checkout ด้วยนะ -->
+<a href="cheackout.html" class="btn btn-primary rounded-pill px-4 py-3 text-uppercase mb-4 ms-4">Proceed Checkout</a>
                 </div>
             </div>
         </div>
@@ -581,6 +486,123 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/cart-sync.js"></script>
-</body>
 
+    <!-- Script สำหรับหน้า Cart โดยเฉพาะ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // โหลดข้อมูลลงตารางทันทีที่เปิดหน้า
+            renderCartPage();
+        });
+
+        // 1. ฟังก์ชันหลักสำหรับวาดตะกร้าสินค้า
+        function renderCartPage() {
+            // ใช้ getCartKey() ที่เราทำไว้ใน cart-sync.js เพื่อให้แยกตะกร้าตาม User
+            const cartKey = typeof getCartKey === 'function' ? getCartKey() : 'shopping_cart_guest';
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            
+            const container = document.getElementById('cart-item-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+
+            if (!container) return; // ป้องกัน Error ถ้าไม่ได้อยู่หน้า Cart
+
+            // กรณีตะกร้าว่างเปล่า
+            if (cart.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" class="text-center py-5"><h4 class="text-muted">ตะกร้าสินค้าว่างเปล่า</h4><a href="shop.html" class="btn btn-primary rounded-pill mt-3">กลับไปช้อปปิ้ง</a></td></tr>`;
+                subtotalEl.innerText = `$0.00`;
+                totalEl.innerText = `$0.00`;
+                return;
+            }
+
+            let subtotal = 0;
+            let html = '';
+
+            // วนลูปวาดตารางสินค้าทีละชิ้น
+            cart.forEach((item) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+
+                html += `
+                <tr>
+                    <th scope="row">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.image}" class="img-fluid me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;" alt="${item.name}">
+                            <p class="mb-0 py-4">${item.name}</p>
+                        </div>
+                    </th>
+                    <td>
+                        <p class="mb-0 py-4">-</p> <!-- ไม่มีโมเดลใน Data -->
+                    </td>
+                    <td>
+                        <p class="mb-0 py-4">$${item.price.toFixed(2)}</p>
+                    </td>
+                    <td>
+                        <div class="input-group quantity py-4" style="width: 100px;">
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-minus rounded-circle bg-light border" onclick="updateCartQty(${item.id}, -1)">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control form-control-sm text-center border-0" value="${item.quantity}" readonly>
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-plus rounded-circle bg-light border" onclick="updateCartQty(${item.id}, 1)">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <p class="mb-0 py-4">$${itemTotal.toFixed(2)}</p>
+                    </td>
+                    <td class="py-4">
+                        <button class="btn btn-md rounded-circle bg-light border" onclick="removeFromCart(${item.id})">
+                            <i class="fa fa-times text-danger"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            // อัปเดต HTML และราคาสุทธิ
+            container.innerHTML = html;
+            subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+            
+            // คิดค่าส่ง (สมมติว่า 3.00)
+            const shipping = 3.00;
+            totalEl.innerText = `$${(subtotal + shipping).toFixed(2)}`;
+        }
+
+        // 2. ฟังก์ชันปรับเพิ่ม-ลดจำนวนสินค้า
+        function updateCartQty(productId, change) {
+            const cartKey = typeof getCartKey === 'function' ? getCartKey() : 'shopping_cart_guest';
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            
+            const itemIndex = cart.findIndex(item => item.id === productId);
+
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += change;
+                // ถ้าจำนวนน้อยกว่า 1 ให้ลบออกจากตะกร้าเลย
+                if (cart[itemIndex].quantity < 1) {
+                    cart.splice(itemIndex, 1); 
+                }
+                
+                // บันทึกกลับและอัปเดตหน้าจอ
+                localStorage.setItem(cartKey, JSON.stringify(cart));
+                renderCartPage(); 
+                if (typeof syncCartBadge === 'function') syncCartBadge(); // อัปเดตกระดิ่งด้านบน
+            }
+        }
+
+        // 3. ฟังก์ชันลบสินค้าทิ้ง (ปุ่มกากบาท)
+        function removeFromCart(productId) {
+            const cartKey = typeof getCartKey === 'function' ? getCartKey() : 'shopping_cart_guest';
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            
+            cart = cart.filter(item => item.id !== productId);
+            
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            renderCartPage();
+            if (typeof syncCartBadge === 'function') syncCartBadge();
+        }
+    </script>
+</body>
 </html>

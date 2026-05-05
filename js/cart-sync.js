@@ -1,6 +1,7 @@
 // 1. แยก Logic การนับจำนวนชิ้นให้เรียกใช้ซ้ำได้ง่าย
 function syncCartBadge() {
-    const savedCart = localStorage.getItem('shopping_cart');
+    const cartKey = getCartKey(); // เรียกใช้ฟังก์ชันที่สร้างไว้
+    const savedCart = localStorage.getItem(cartKey); // เปลี่ยนจาก 'shopping_cart' เป็น cartKey
     let cartData = [];
 
     try {
@@ -63,6 +64,14 @@ function checkLoginStatus() {
         });
     }
 }
+
+// ฟังก์ชันดึงชื่อ Key ตะกร้าของแต่ละ User
+function getCartKey() {
+    const userName = localStorage.getItem('user_name');
+    // ถ้า Login แล้วให้ใช้ชื่อ user เป็น key ถ้ายังให้ใช้ guest
+    return userName ? `shopping_cart_${userName}` : 'shopping_cart_guest';
+}
+
 
 // 3. รันฟังก์ชันเมื่อ DOM พร้อม
 document.addEventListener('DOMContentLoaded', () => {

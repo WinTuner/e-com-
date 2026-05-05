@@ -2373,227 +2373,169 @@
     <script src="js/cart-sync.js"></script>
 
     <script>
+        let allProducts = []; // ตัวแปรเก็บข้อมูลดิบทั้งหมดจาก JSON
+        let cart = []; // ตัวแปรเก็บข้อมูลในตะกร้า
 
-let allProducts = []; // ตัวแปรเก็บข้อมูลดิบทั้งหมดจาก JSON
+        // 1. ฟังก์ชันโหลดข้อมูลสินค้า (Fetch Data)
+        async function loadProducts() {
+            const url = 'http://localhost:3000/api/products'; // ดึงจาก API ของเรา
+            const container = document.querySelector('#products-container');
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Load data failed");
+                
+                allProducts = await response.json();
+                renderUI(allProducts); // ครั้งแรกโชว์ทั้งหมด
+            } catch (error) {
+                console.error("Error:", error);
+                container.innerHTML = `<div class="col-12 text-center py-5 text-danger">ระบบขัดข้อง ไม่สามารถโหลดสินค้าได้ (ตรวจสอบว่า Server รันอยู่หรือไม่)</div>`;
+            }
+        }
 
-// 1. ฟังก์ชันโหลดข้อมูล (Fetch Data)
-async function loadProducts() {
-    const url = 'http://localhost:3000/api/products';
-    const container = document.querySelector('#products-container');
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Load data failed");
-        
-        allProducts = await response.json();
-        renderUI(allProducts); // ครั้งแรกโชว์ทั้งหมด
+        // 2. ฟังก์ชันกรองข้อมูล (Filter Logic)
+        function filterProducts() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categorySelect').value;
 
-    } catch (error) {
-        console.error("Error:", error);
-        container.innerHTML = `<div class="col-12 text-center py-5">ระบบขัดข้อง กรุณาลองใหม่อีกครั้ง</div>`;
-    }
-}
+            const filtered = allProducts.filter(item => {
+                const isMatchCategory = (category === "All Category" || item.category === category);
+                const isMatchName = item.name.toLowerCase().includes(keyword);
+                return isMatchCategory && isMatchName;
+            });
 
-// 2. ฟังก์ชันกรองข้อมูล (Filter Logic)
-function filterProducts() {
-    const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-    const category = document.getElementById('categorySelect').value;
+            renderUI(filtered);
+        }
 
-    const filtered = allProducts.filter(item => {
-        // เงื่อนไขหมวดหมู่: ถ้าเป็น 'All Category' ให้ผ่านหมด หรือถ้าตรงกับ category ใน JSON
-        const isMatchCategory = (category === "All Category" || item.category === category);
-        
-        // เงื่อนไขชื่อสินค้า: ตรวจสอบว่ามีคำที่พิมพ์อยู่หรือไม่
-        const isMatchName = item.name.toLowerCase().includes(keyword);
+        // 3. ฟังก์ชันแสดงผลบนหน้าเว็บ (Render UI)
+        function renderUI(products) {
+            const container = document.querySelector('#products-container');
+            container.innerHTML = ''; // ล้างข้อมูลเก่า
 
-        return isMatchCategory && isMatchName;
-    });
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h3 class="display-6 text-muted">ไม่พบสินค้าที่คุณต้องการ</h3>
+                        <p>ขออภัย ไม่พบสินค้าที่ตรงกับ "${document.getElementById('searchInput').value}" ในหมวดหมู่ที่คุณเลือก</p>
+                        <button class="btn btn-primary rounded-pill px-4" onclick="resetFilter()">แสดงสินค้าทั้งหมด</button>
+                    </div>`;
+                return;
+            }
 
-    renderUI(filtered);
-}
+            const html = products.map(product => {
+                const stars = Array.from({ length: 5 }, (_, i) => 
+                    `<i class="fas fa-star ${i < product.rating ? 'text-primary' : 'text-muted'}"></i>`
+                ).join('');
 
-// 3. ฟังก์ชันแสดงผลบนหน้าเว็บ (Render UI)
-function renderUI(products) {
-    const container = document.querySelector('#products-container');
-    
-    // ล้างข้อมูลเก่า
-    container.innerHTML = '';
-
-    // กรณีที่ 3: ถ้าค้นหาแล้วไม่เจอสินค้าเลย
-    if (products.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5 wow fadeInUp" data-wow-delay="0.1s">
-                <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                <h3 class="display-6 text-muted">ไม่พบสินค้าที่คุณต้องการ</h3>
-                <p>ขออภัย ไม่พบสินค้าที่ตรงกับ "${document.getElementById('searchInput').value}" ในหมวดหมู่ที่คุณเลือก</p>
-                <button class="btn btn-primary rounded-pill px-4" onclick="resetFilter()">แสดงสินค้าทั้งหมด</button>
-            </div>`;
-        return;
-    }
-
-    // กรณีที่ 1 & 2: เจอสินค้า (Map ข้อมูลออกมาเป็น HTML)
-    const html = products.map(product => {
-        // สร้างดาวตาม rating
-        const stars = Array.from({ length: 5 }, (_, i) => 
-            `<i class="fas fa-star ${i < product.rating ? 'text-primary' : 'text-muted'}"></i>`
-        ).join('');
-
-        return `
-            <div class="col-md-6 col-lg-4">
-                <div class="product-item rounded wow fadeInUp" data-wow-delay="${product.wow_delay}">
-                    <div class="product-item-inner border rounded">
-                        <div class="product-item-inner-item">
-                            <img src="${product.image}" 
-     class="img-fluid w-100 rounded-top" 
-     alt="${product.name}"
-     onerror="this.onerror=null;this.src='https://via.placeholder.com/400x400?text=No+Image';">
-                            ${product.is_new ? '<div class="product-new">New</div>' : ''}
-                            <div class="product-details">
-                                <a href="#"><i class="fa fa-eye fa-1x"></i></a>
+                // ปรับ UI เล็กน้อยให้รับค่าจาก JSON (ราคาดิบ ไม่มี .00 ถ้าไม่จำเป็น)
+                return `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="product-item rounded wow fadeInUp" data-wow-delay="${product.wow_delay || '0.1s'}">
+                            <div class="product-item-inner border rounded">
+                                <div class="product-item-inner-item">
+                                    <img src="${product.image}" class="img-fluid w-100 rounded-top" alt="${product.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x400?text=No+Image';">
+                                    ${product.is_new ? '<div class="product-new">New</div>' : ''}
+                                </div>
+                                <div class="text-center rounded-bottom p-4">
+                                    <a href="#" class="d-block mb-2 text-secondary">${product.category}</a>
+                                    <a href="#" class="d-block h5 mb-3" style="min-height: 50px;">${product.name}</a>
+                                    <del class="me-2 text-muted">$${product.old_price}</del>
+                                    <span class="text-primary fw-bold fs-5">$${product.current_price}</span>
+                                </div>
+                            </div>
+                            <div class="product-item-add border border-top-0 rounded-bottom text-center p-4 pt-0">
+                                <a href="javascript:void(0)" class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" data-id="${product.id}">
+                                    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">${stars}</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-center rounded-bottom p-4">
-                            <a href="#" class="d-block mb-2 text-secondary">${product.category}</a>
-                            <a href="#" class="d-block h5 mb-3" style="min-height: 50px;">${product.name}</a>
-                            <del class="me-2 text-muted">$${product.old_price.toFixed(2)}</del>
-                            <span class="text-primary fw-bold fs-5">$${product.current_price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                    <div class="product-item-add border border-top-0 rounded-bottom text-center p-4 pt-0">
-<a href="javascript:void(0)" 
-   class="btn btn-primary border-secondary rounded-pill py-2 px-4 mb-4 add-to-cart" 
-   data-id="${product.id}">
-    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
-</a>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">${stars}</div>
-                            <div class="d-flex">
-                                <a href="#" class="text-primary me-3"><span class="rounded-circle btn-sm-square border"><i class="fas fa-random"></i></span></a>
-                                <a href="#" class="text-primary"><span class="rounded-circle btn-sm-square border"><i class="fas fa-heart"></i></span></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-    }).join('');
+                    </div>`;
+            }).join('');
 
-    container.innerHTML = html;
+            container.innerHTML = html;
+            if (typeof WOW === 'function') { new WOW().init(); }
+        }
 
-    // สั่งให้ Animation (WOW.js) ทำงานกับธาตุที่สร้างใหม่
-    if (typeof WOW === 'function') { new WOW().init(); }
-}
+        // ฟังก์ชันล้างค่าการค้นหา
+        function resetFilter() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categorySelect').value = 'All Category';
+            renderUI(allProducts);
+        }
 
-// ฟังก์ชันล้างค่าการค้นหา
-function resetFilter() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('categorySelect').value = 'All Category';
-    renderUI(allProducts);
-}
+        // --- ระบบจัดการตะกร้าสินค้า (เชื่อมกับ cart-sync.js) ---
 
-// ผูก Event ต่างๆ เมื่อโหลดหน้าเสร็จ
-document.addEventListener('DOMContentLoaded', () => {
-    // ดึงข้อมูลเก่าจาก LocalStorage ถ้ามี
-    const savedCart = localStorage.getItem('shopping_cart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
-        updateCartUI(); // อัปเดตตัวเลขบน UI ทันที
-    }
+        // ฟังก์ชันอัปเดต UI และบันทึกข้อมูล
+        function updateCartUI() {
+            const cartKey = getCartKey(); // 🌟 ดึงชื่อ Key เฉพาะของ User จาก cart-sync.js
+            
+            // บันทึกลง LocalStorage ด้วยชื่อ Key ของแต่ละคน
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            
+            // สั่งอัปเดตตัวเลขกระดิ่ง (Badge) โดยใช้ฟังก์ชันจาก cart-sync.js
+            syncCartBadge();
+        }
 
-    loadProducts('./data/products.json');
+        // Handler สำหรับเพิ่มสินค้า
+        function handleAddToCart(productId) {
+            const existingItem = cart.find(item => item.id === productId);
+            const productInfo = allProducts.find(p => p.id === productId);
 
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else if (productInfo) {
+                cart.push({
+                    id: productInfo.id,
+                    name: productInfo.name,
+                    price: productInfo.current_price,
+                    image: productInfo.image,
+                    quantity: 1
+                });
+            }
 
-    // ค้นหาแบบ Real-time ขณะพิมพ์
-    document.getElementById('searchInput').addEventListener('input', filterProducts);
-    
-    // เปลี่ยนหมวดหมู่แล้วกรองทันที
-    document.getElementById('categorySelect').addEventListener('change', filterProducts);
-});
+            if (productInfo) alert(`เพิ่ม ${productInfo.name} ลงตะกร้าของท่านแล้ว`);
+            updateCartUI();
+        }
 
+        // Event ดักจับการกดปุ่ม Add to Cart
+        const catalog = document.querySelector('#products-container');
+        if (catalog) {
+            catalog.addEventListener('click', function(event) {
+                const btn = event.target.closest('.add-to-cart');
+                if (btn) {
+                    event.preventDefault();
+                    const productId = parseInt(btn.getAttribute('data-id'));
+                    handleAddToCart(productId);
+                }
+            });
+        }
 
-// ตัวแปรเก็บข้อมูลในตะกร้า
+        // --- รวบรวม DOMContentLoaded ไว้ที่เดียว เพื่อไม่ให้โค้ดตีกัน ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. ดึงตะกร้าสินค้าให้ตรงกับ User ปัจจุบัน 🌟
+            const cartKey = getCartKey();
+            const savedCart = localStorage.getItem(cartKey);
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+            
+            // 2. อัปเดตตัวเลขกระดิ่งทันที
+            syncCartBadge();
 
-let cart = [];
+            // 3. โหลดสินค้าจาก Backend
+            loadProducts();
 
-
-const catalog = document.querySelector('#products-container');
-
-catalog.addEventListener('click', function(event) {
-    // ตรวจสอบว่าสิ่งที่ถูกคลิก หรือตัวแม่ที่ใกล้ที่สุดของสิ่งที่คลิก มี class 'add-to-cart' หรือไม่
-    const btn = event.target.closest('.add-to-cart');
-
-    if (btn) {
-        // ป้องกัน Browser รีเฟรชหน้า (ในกรณีใช้แท็ก <a>)
-        event.preventDefault();
-        
-        // 2. Grab the data-id attribute (Product ID)
-        // Attribute นี้เก็บ ID ของสินค้าที่ต้องการเพิ่ม
-        const productId = parseInt(btn.getAttribute('data-id'));
-        
-        // ส่ง ID ไปเข้าฟังก์ชันจัดการ Logic ตะกร้า
-        handleAddToCart(productId);
-    }
-});
-
-
-// ฟังก์ชันอัปเดต UI และบันทึกข้อมูล (Core Persistence)
-function updateCartUI() {
-    // 1. คำนวณจำนวนชิ้นทั้งหมด (Sum of quantity)
-    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    // 2. หา Element ที่เราต้องการแสดงจำนวนชิ้น
-    const qtyDisplays = document.querySelectorAll('#cart-total-qty');
-    
-    qtyDisplays.forEach((qtyDisplay) => {
-        // เปลี่ยนการแสดงผลเป็นจำนวนชิ้น
-        qtyDisplay.innerText = `${totalQty} ชิ้น`;
-    });
-
-    // 3. บันทึกลง LocalStorage (Persistence)
-    localStorage.setItem('shopping_cart', JSON.stringify(cart));
-    
-    // Debug ดูค่าในตาราง
-    console.table(cart);
-}
-
-// Handler สำหรับเพิ่มสินค้า
-function handleAddToCart(productId) {
-    const existingItem = cart.find(item => item.id === productId);
-    const productInfo = allProducts.find(p => p.id === productId);
-
-    if (existingItem) {
-        // [YES] -> Increment quantity
-        existingItem.quantity += 1;
-    } else if (productInfo) {
-        // [NO] -> Push new object with quantity = 1
-        cart.push({
-            id: productInfo.id,
-            name: productInfo.name,
-            price: productInfo.current_price,
-            image: productInfo.image,
-            quantity: 1
+            // 4. ผูก Event ช่องค้นหา (ถ้ามี)
+            const searchInput = document.getElementById('searchInput');
+            const categorySelect = document.getElementById('categorySelect');
+            if (searchInput) searchInput.addEventListener('input', filterProducts);
+            if (categorySelect) categorySelect.addEventListener('change', filterProducts);
         });
-    }
-
-    // แจ้งเตือน User เล็กน้อย
-    if (productInfo) alert(`เพิ่ม ${productInfo.name} ลงตะกร้าแล้ว`);
-    
-    updateCartUI();
-}
-
-// โหลดข้อมูลเมื่อเปิดหน้าเว็บ (Retrieve Persistence)
-document.addEventListener('DOMContentLoaded', () => {
-    const savedCart = localStorage.getItem('shopping_cart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
-        updateCartUI();
-    }
-    
-    // โหลดสินค้าจาก JSON
-    loadProducts();
-});
-
 
     </script>
-
 </body>
-
 </html>
