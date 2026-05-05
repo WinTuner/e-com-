@@ -66,3 +66,66 @@ router.post('/login', (req, res) => {
 });
 
 module.exports = router;
+
+// --- REGISTER ROUTE ---
+router.post('/register', (req, res) => {
+    // 1. รับข้อมูลจาก Frontend
+    const { name, email, password } = req.body;
+
+    // Gatekeeper: ตรวจสอบข้อมูลว่าง
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 2. อ่านไฟล์ auth_user.json
+    fs.readFile(usersFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("❌ Read File Error:", err);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
+        try {
+            const users = JSON.parse(data);
+
+            // 3. เช็คว่ามี Username (email) นี้อยู่ในระบบแล้วหรือยัง?
+            const userExists = users.some(u => u.username === email);
+            if (userExists) {
+                return res.status(409).json({ message: "Email/Username already exists" });
+            }
+
+            // 4. เข้ารหัส Password เป็น MD5 (ให้ตรงกับระบบเก่า)
+            const passwordHash = crypto.createHash('md5').update(password).digest('hex');
+
+            // หาวันที่ปัจจุบัน (YYYY-MM-DD)
+            const today = new Date().toISOString().split('T')[0];
+
+            // 5. สร้าง Object User คนใหม่
+            const newUser = {
+                username: email,
+                password_hash: passwordHash,
+                first_name: name,
+                reg_date: today
+            };
+
+            // เพิ่มลงใน Array
+            users.push(newUser);
+
+            // 6. เขียนข้อมูลกลับลงไปในไฟล์ JSON
+            // ใช้ JSON.stringify(users, null, 2) เพื่อจัด Format ให้สวยงามอ่านง่าย
+            fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), 'utf8', (writeErr) => {
+                if (writeErr) {
+                    console.error("❌ Write File Error:", writeErr);
+                    return res.status(500).json({ message: "Failed to save user data" });
+                }
+
+                console.log(`✅ [Register] New user created: ${email}`);
+                // ส่ง Status 201 (Created) กลับไปที่ Frontend
+                res.status(201).json({ success: true, message: "Registration successful" });
+            });
+
+        } catch (parseErr) {
+            console.error("❌ JSON Parse Error:", parseErr);
+            res.status(500).json({ message: "Data format error" });
+        }
+    });
+});

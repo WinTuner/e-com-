@@ -58,6 +58,11 @@
     "password_hash": "084e0343a0486ff05530df6c705c8bb9",
     "first_name": "Guest",
     "reg_date": "2026-05-04"
+  },
+  {
+    "username": "dev.dii@cmu.ac.th",
+    "password_hash": "20e5250189446de4f8219545c1af965d",
+    "first_name": "Dev CAMT",
+    "reg_date": "2026-05-05"
   }
-  
 ]
