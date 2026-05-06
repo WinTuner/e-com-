@@ -1,51 +1,28 @@
-const fs = require('fs');
-const path = require('path');
+const db = require('../config/database'); // ไฟล์เชื่อมต่อ SQLite ของคุณ
 
-// ชี้ Path ไปที่ไฟล์ products.json ในโฟลเดอร์ data ของเรา
-const productsFilePath = path.join(__dirname, '../data/products.json');
-
-// สร้างฟังก์ชันกลางสำหรับอ่านไฟล์ (ใช้ Promise เพื่อให้รองรับ async/await ของ Controller เดิม)
-const readProductsFromFile = () => {
+// ดึงสินค้าทั้งหมด (ที่ยังเปิดขายอยู่)
+const getAllProducts = () => {
     return new Promise((resolve, reject) => {
-        fs.readFile(productsFilePath, 'utf8', (err, data) => {
-            if (err) {
-                console.error("❌ [Product Service] Cannot read products.json:", err.message);
-                return reject(err);
-            }
-            try {
-                const products = JSON.parse(data);
-                resolve(products);
-            } catch (parseErr) {
-                console.error("❌ [Product Service] JSON Parse Error:", parseErr.message);
-                reject(parseErr);
-            }
+        const sql = `SELECT * FROM products WHERE is_active = 1`;
+        db.all(sql, [], (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
         });
     });
 };
 
-// 1. ดึงสินค้าทั้งหมด
-const getAllProducts = async () => {
-    try {
-        const products = await readProductsFromFile();
-        return products;
-    } catch (error) {
-        throw error;
-    }
+// ดึงสินค้าตามหมวดหมู่ (ที่ยังเปิดขายอยู่)
+const getProductsByCategory = (category) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM products WHERE category = ? AND is_active = 1`;
+        db.all(sql, [category], (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
 };
 
-// 2. ดึงสินค้าตามหมวดหมู่ (สำหรับตอนคลิก Filter)
-const getProductsByCategory = async (category) => {
-    try {
-        // Gatekeeper Check
-        if (!category) throw new Error("Category is required");
-
-        const products = await readProductsFromFile();
-        // ใช้ Array.filter() กรองข้อมูลแทน SQL WHERE
-        const filteredProducts = products.filter(p => p.category === category);
-        return filteredProducts;
-    } catch (error) {
-        throw error;
-    }
+module.exports = {
+    getAllProducts,
+    getProductsByCategory
 };
-
-module.exports = { getProductsByCategory, getAllProducts };

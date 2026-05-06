@@ -44,14 +44,21 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
         if (response.status === 201) {
             alert(`สั่งซื้อสำเร็จ! รหัสอ้างอิง: ${result.orderId}`);
             
-            // ล้างตะกร้าสินค้าหลังสั่งซื้อเสร็จ
-            localStorage.removeItem(cartKey);
+            // ล้างตะกร้าก็ต่อเมื่อ Backend อนุญาต
+            if (result.clearCart === true) {
+                localStorage.removeItem(cartKey);
+            }
             
             // เปลี่ยนหน้าไปหน้าขอบคุณ หรือกลับหน้าแรก
             window.location.href = 'index.html'; 
         } else {
             // แสดง Error ตามเงื่อนไขที่พัง (เช่น บัตรผิด, ตะกร้าว่าง, Token หมดอายุ)
             alert(`ไม่สามารถสั่งซื้อได้: ${result.message}`);
+
+            // เมื่อ Backend ระบุ clearCart: false ให้เก็บตะกร้าไว้เพื่อกดสั่งใหม่
+            if (result.clearCart === false) {
+                console.log('Checkout failed; keep cart for retry.');
+            }
             
             // ถ้า Token มีปัญหา ให้ไล่กลับไปล็อกอินใหม่
             if (response.status === 401) {

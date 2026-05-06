@@ -2,83 +2,139 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const db = require('../config/database');
 
 const JWT_SECRET = 'electro_2026_secret';
 
-// เชื่อมต่อฐานข้อมูล SQLite (ไฟล์ electro.db จะอยู่ที่ root ของโปรเจกต์)
-const dbPath = path.join(__dirname, '../../../electro.db'); // ปรับ Path ให้ตรงกับโฟลเดอร์ของคุณ
-const db = new sqlite3.Database(dbPath);
-
-// สร้างตาราง orders อัตโนมัติถ้ายังไม่มี
-db.run(`CREATE TABLE IF NOT EXISTS orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    order_id TEXT UNIQUE,
-    user_email TEXT,
-    total_amount REAL,
-    status TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
-
 router.post('/checkout', (req, res) => {
-    // 1. ตรวจสอบ Login (Authentication Check)
-    const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, message: "Unauthorized: Please login first." });
-    }
-
-    const token = authHeader.split(' ')[1];
-    let decodedUser;
-
     try {
-        decodedUser = jwt.verify(token, JWT_SECRET);
-    } catch (error) {
-        return res.status(401).json({ success: false, message: "Unauthorized: Invalid or expired token." });
-    }
-
-    // 2. ดึงข้อมูลจาก Request Body
-    const { cart, email, creditCard } = req.body;
-
-    if (!cart || cart.length === 0) {
-        return res.status(400).json({ success: false, message: "Checkout rejected: Your cart is empty." });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-        return res.status(400).json({ success: false, message: "Checkout rejected: Invalid email format." });
-    }
-    
-    // ป้องกันการแอบอ้างใส่อีเมลคนอื่น
-    if (email !== decodedUser.id) { 
-        return res.status(403).json({ success: false, message: "Forbidden: Email does not match logged-in user." });
-    }
-
-    const sanitizedCard = creditCard ? creditCard.replace(/[\s-]/g, '') : '';
-    if (!sanitizedCard || sanitizedCard.length !== 16 || isNaN(sanitizedCard)) {
-        return res.status(400).json({ success: false, message: "Checkout rejected: Credit card number must be exactly 16 digits." });
-    }
-
-    // 3. สร้าง Order ID และคำนวณยอดรวม
-    const orderId = uuidv4();
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    // 4. บันทึกลง SQLite
-    const insertOrderQuery = `INSERT INTO orders (order_id, user_email, total_amount, status) VALUES (?, ?, ?, ?)`;
-    
-    db.run(insertOrderQuery, [orderId, email, totalAmount, 'Paid'], function(err) {
-        if (err) {
-            console.error('❌ [Checkout] Database error:', err.message);
-            return res.status(500).json({ success: false, message: "Internal Server Error: Failed to save order." });
+        const authHeader = req.headers.authorization || '';
+        if (!authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized: Please login first.',
+                clearCart: false
+            });
         }
 
-        console.log(`✅ [Checkout] Order ${orderId} created for ${email}`);
-        return res.status(201).json({
-            success: true,
-            message: "Order placed successfully!",
-            orderId: orderId
+        const token = authHeader.split(' ')[1];
+        const decodedUser = jwt.verify(token, JWT_SECRET);
+
+        const { cart, email, creditCard } = req.body;
+
+        if (!Array.isArray(cart) || cart.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Checkout rejected: Your cart is empty.',
+                clearCart: false
+            });
+        }
+
+        if (!email || email !== decodedUser.email) {
+            console.warn(`⚠️ [Auth Match Failed] Input: ${email} vs Token: ${decodedUser.email}`);
+            return res.status(403).json({
+                success: false,
+                message: 'Forbidden: อีเมลไม่ตรงกับบัญชีที่เข้าสู่ระบบ',
+                clearCart: false
+            });
+        }
+
+        const sanitizedCard = creditCard ? creditCard.replace(/[\s-]/g, '') : '';
+        if (!sanitizedCard || sanitizedCard.length !== 16 || !/^[0-9]+$/.test(sanitizedCard)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Checkout rejected: Credit card number must be exactly 16 digits.',
+                clearCart: false
+            });
+        }
+
+        const orderId = uuidv4();
+        const userId = decodedUser.userId;
+        const totalAmount = cart.reduce((sum, item) => {
+            const price = Number(item.price || item.current_price || 0);
+            const quantity = Number(item.quantity || 0);
+            return sum + (price * quantity);
+        }, 0);
+
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION');
+
+            const insertOrderQuery = `
+                INSERT INTO orders (order_id, user_id, user_email, total_price, status)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+
+            db.run(insertOrderQuery, [orderId, userId, email, totalAmount, 'Paid'], function (err) {
+                if (err) {
+                    console.error('[Checkout] Database error saving order:', err.message);
+                    db.run('ROLLBACK');
+                    return res.status(400).json({
+                        success: false,
+                        message: `Checkout rejected: Unable to save order into database. (${err.message})`,
+                        clearCart: false
+                    });
+                }
+
+                const insertItemQuery = `
+                    INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+                    VALUES (?, ?, ?, ?, ?)
+                `;
+                const stmt = db.prepare(insertItemQuery);
+                let hasItemError = false;
+
+                cart.forEach((item) => {
+                    const price = Number(item.price || item.current_price || 0);
+                    const quantity = Number(item.quantity || 0);
+                    stmt.run([orderId, item.id, item.name, quantity, price], (itemErr) => {
+                        if (itemErr) {
+                            console.error(`[Checkout] Error saving item ${item.name}:`, itemErr.message);
+                            hasItemError = true;
+                        }
+                    });
+                });
+
+                // --- ส่วนท้ายของ checkoutRoutes.js ตรง stmt.finalize ---
+
+stmt.finalize((err) => {
+    if (hasItemError || err) {
+        console.error('❌ [Checkout] Rolling back due to errors.');
+        db.run("ROLLBACK"); 
+        return res.status(400).json({ success: false, message: 'Unable to save order items.' });
+    } else {
+        // 🌟 เพิ่ม Log ตรงนี้เพื่อยืนยันการบันทึกระดับ Low-level
+        db.run("COMMIT", (commitErr) => {
+            if (commitErr) {
+                console.error('❌ [Checkout] Commit Failed:', commitErr.message);
+                return res.status(500).json({ success: false, message: 'Database commit error' });
+            }
+            
+            console.log(`🚀 [Database] Transaction Committed: ${orderId}`);
+            
+            // ลองนับจำนวน Order ทันทีหลัง Commit เพื่อพิสูจน์
+            db.get("SELECT COUNT(*) as count FROM orders", (countErr, row) => {
+                console.log(`📊 Current total orders in DB: ${row ? row.count : 0}`);
+            });
+
+            return res.status(201).json({
+                success: true,
+                message: 'Order placed successfully!',
+                orderId,
+                clearCart: true
+            });
         });
-    });
+    }
 });
+            });
+        });
+    } catch (error) {
+        console.error('❌ [Checkout] Unexpected error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error: An unexpected error occurred during checkout.',
+            clearCart: false
+        });
+    }
+}
+);
 
 module.exports = router;

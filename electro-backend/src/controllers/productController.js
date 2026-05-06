@@ -1,19 +1,29 @@
 const productService = require('../services/productService');
 
-// ใน src/controllers/productController.js
 const getProducts = async (req, res) => {
     try {
         const { category } = req.query;
-        let products = (category && category !== "All Category") 
-            ? await productService.getProductsByCategory(category)
-            : await productService.getAllProducts();
+        let products;
 
-        res.status(200).json(products);
+        // แยก Logic การดึงตามหมวดหมู่ หรือทั้งหมด
+        if (category && category !== "All Category") {
+            products = await productService.getProductsByCategory(category);
+        } else {
+            products = await productService.getAllProducts();
+        }
+
+        // 🌟 ส่ง Object กลับไปให้หน้าบ้าน (Frontend) รับค่าไปแสดงผล
+        res.status(200).json({
+            success: true,
+            data: products
+        });
+
     } catch (error) {
-        // บันทึกลง Log ของ Server เท่านั้น
         console.error('❌ Internal Server Error:', error); 
-        // ส่งข้อความกลางๆ กลับไปหา User
-        res.status(500).json({ message: "ไม่สามารถดึงข้อมูลสินค้าได้ในขณะนี้" });
+        res.status(500).json({ 
+            success: false, 
+            message: "ไม่สามารถดึงข้อมูลสินค้าได้ในขณะนี้" 
+        });
     }
 };
 
