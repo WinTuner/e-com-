@@ -15,13 +15,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 // ในไฟล์ src/config/database.js ส่วน db.serialize
 
 db.serialize(() => {
-    console.log("🔄 Resetting tables to sync schema...");
-
-    // 🌟 เพิ่ม 2 บรรทัดนี้เพื่อลบของเก่าที่มีปัญหาออก
-    db.run(`DROP TABLE IF EXISTS order_items`);
-    db.run(`DROP TABLE IF EXISTS orders`);
-
-    // จากนั้นปล่อยให้โค้ดเดิมของคุณทำงาน (มันจะสร้างตารางใหม่ที่มี order_id ให้เอง)
+    console.log("🔄 Ensuring schema exists (will NOT drop tables)...");
     db.run(`CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_id TEXT UNIQUE,        -- คอลัมน์ที่ Error แจ้งว่าหาไม่เจอ
