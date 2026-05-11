@@ -22,7 +22,7 @@ class OrderRepository {
     }
 
     /**
-     * Create order items
+     * Create order items (Fixed: Correctly awaits all insertions)
      * @param {string} orderId
      * @param {Array} items - Array of {product_id, product_name, quantity, price}
      * @returns {Promise<void>}
@@ -34,26 +34,33 @@ class OrderRepository {
                 VALUES (?, ?, ?, ?, ?)
             `;
             const stmt = db.prepare(insertItemQuery);
-            let hasError = false;
-            let processedCount = 0;
-
-            items.forEach((item) => {
-                stmt.run([orderId, item.product_id, item.product_name, item.quantity, item.price], (err) => {
-                    if (err) {
-                        console.error(`[OrderRepository] Error saving item ${item.product_name}:`, err.message);
-                        hasError = true;
-                    }
-                    processedCount++;
+            
+            // Create an array of promises for each item insertion
+            const insertionPromises = items.map(item => {
+                return new Promise((res, rej) => {
+                    stmt.run(
+                        [orderId, item.product_id, item.product_name, item.quantity, item.price],
+                        (err) => {
+                            if (err) rej(err);
+                            else res();
+                        }
+                    );
                 });
             });
 
-            stmt.finalize((err) => {
-                if (hasError || err) {
-                    reject(new Error('Failed to save order items'));
-                } else {
-                    resolve();
-                }
-            });
+            // Wait for ALL insertions to complete before finalizing
+            Promise.all(insertionPromises)
+                .then(() => {
+                    stmt.finalize((err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                })
+                .catch((err) => {
+                    console.error('[OrderRepository] Batch insertion error:', err.message);
+                    stmt.finalize(); // Clean up statement
+                    reject(new Error('Failed to save all order items'));
+                });
         });
     }
 

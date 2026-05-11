@@ -3,7 +3,15 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/UserRepository');
 
-const JWT_SECRET = 'electro_2026_secret';
+function getJwtSecret() {
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+        throw new Error('JWT_SECRET is not set. Add it to electro-backend/.env before starting the server.');
+    }
+
+    return secret;
+}
 
 class AuthService {
     /**
@@ -101,7 +109,7 @@ class AuthService {
                 name: user.name,
                 role: user.role || 'user'
             },
-            JWT_SECRET,
+            getJwtSecret(),
             { expiresIn: '2h' }
         );
 
@@ -127,7 +135,7 @@ class AuthService {
      */
     verifyToken(token) {
         try {
-            return jwt.verify(token, JWT_SECRET);
+            return jwt.verify(token, getJwtSecret());
         } catch (error) {
             throw new Error('Invalid or expired token');
         }

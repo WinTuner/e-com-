@@ -26,7 +26,7 @@ class OrderService {
     }
 
     /**
-     * Process checkout order
+     * Process checkout order (Fixed: Secure Price calculation & Sanitized Logging)
      * @param {Object} user - {userId, email}
      * @param {Array} cart - Cart items
      * @param {string} creditCard
@@ -42,10 +42,7 @@ class OrderService {
             throw new Error('Invalid credit card number');
         }
 
-        // Validate products in cart
-        await productService.validateCartItems(cart);
-
-        // Calculate total
+        // 🛡️ Security: Calculate total using DB prices, not client prices
         const totalAmount = await productService.calculateCartTotal(cart);
 
         // Create order in database
@@ -57,21 +54,29 @@ class OrderService {
                 db.serialize(() => {
                     db.run('BEGIN TRANSACTION');
 
-                    // Create order
+                    // 🛡️ Security: Create order items using DB-verified data
                     orderRepository.createOrder({
                         order_id: orderId,
                         user_id: user.userId,
                         user_email: user.email,
                         total_price: totalAmount,
                         status: 'Paid'
-                    }).then(() => {
-                        // Create order items
-                        const items = cart.map(item => ({
-                            product_id: item.id,
-                            product_name: item.name,
-                            quantity: Number(item.quantity || 0),
-                            price: Number(item.price || item.current_price || 0)
-                        }));
+                    }).then(async () => {
+                        // Re-fetch products to get authoritative names and prices for the record
+                        const productIds = cart.map(item => item.id);
+                        const dbProducts = await require('../repositories/ProductRepository').getByIds(productIds);
+                        const productMap = {};
+                        dbProducts.forEach(p => { productMap[p.id] = p; });
+
+                        const items = cart.map(item => {
+                            const dbP = productMap[item.id];
+                            return {
+                                product_id: item.id,
+                                product_name: dbP.name,
+                                quantity: Number(item.quantity || 0),
+                                price: dbP.current_price
+                            };
+                        });
 
                         return orderRepository.createOrderItems(orderId, items);
                     }).then(() => {
@@ -91,9 +96,8 @@ class OrderService {
                 });
             });
 
-            // Log final state
-            const totalOrders = await orderRepository.countTotal();
-            console.log(`📊 [OrderService] Total orders in DB: ${totalOrders}`);
+            // Log final state (Sanitized)
+            console.log(`📊 [OrderService] Order processed for user: ${user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3")}`);
 
             return {
                 success: true,
@@ -102,8 +106,9 @@ class OrderService {
                 message: 'Order placed successfully'
             };
         } catch (error) {
+            // 🛡️ Security: Sanitize error logging (Remove sensitive data)
             console.error('❌ [OrderService] Checkout error:', error.message);
-            throw new Error(`Failed to process checkout: ${error.message}`);
+            throw new Error('Failed to process checkout. Please verify your payment details.');
         }
     }
 

@@ -5,10 +5,9 @@ class AuthController {
      * POST /api/register
      * Register a new user
      */
-    async register(req, res) {
+    async register(req, res, next) {
         try {
             const { name, email, password } = req.body;
-
             const result = await authService.register(name, email, password);
 
             return res.status(201).json({
@@ -16,27 +15,7 @@ class AuthController {
                 message: result.message
             });
         } catch (error) {
-            console.error('❌ [AuthController] Registration error:', error.message);
-
-            // Handle specific error types
-            if (error.message.includes('already exists')) {
-                return res.status(409).json({
-                    success: false,
-                    message: 'Email already exists'
-                });
-            }
-
-            if (error.message.includes('required')) {
-                return res.status(400).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-
-            return res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
+            next(error);
         }
     }
 
@@ -44,34 +23,14 @@ class AuthController {
      * POST /api/login
      * Login user and return JWT token
      */
-    async login(req, res) {
+    async login(req, res, next) {
         try {
             const { email, password } = req.body;
-
             const result = await authService.login(email, password);
 
             return res.status(200).json(result);
         } catch (error) {
-            console.error('❌ [AuthController] Login error:', error.message);
-
-            if (error.message.includes('required')) {
-                return res.status(400).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-
-            if (error.message.includes('Invalid')) {
-                return res.status(401).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-
-            return res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
+            next(error);
         }
     }
 
@@ -79,7 +38,7 @@ class AuthController {
      * POST /api/auth/verify
      * Verify token and return decoded user payload
      */
-    async verify(req, res) {
+    async verify(req, res, next) {
         try {
             const authHeader = req.headers.authorization || '';
             const tokenFromHeader = authHeader.startsWith('Bearer ')
@@ -89,10 +48,9 @@ class AuthController {
             const token = tokenFromHeader || tokenFromBody;
 
             if (!token) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Token is required'
-                });
+                const error = new Error('Token is required');
+                error.statusCode = 400;
+                throw error;
             }
 
             const decodedUser = authService.verifyToken(token);
@@ -107,10 +65,7 @@ class AuthController {
                 }
             });
         } catch (error) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid or expired token'
-            });
+            next(error);
         }
     }
 }

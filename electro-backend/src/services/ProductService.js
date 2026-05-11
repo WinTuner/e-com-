@@ -76,28 +76,43 @@ class ProductService {
     }
 
     /**
-     * Calculate total price with validation
+     * Calculate total price with validation (Secure: Fetches prices from DB)
      * @param {Array<Object>} cartItems
      * @returns {Promise<number>}
      */
     async calculateCartTotal(cartItems) {
         try {
-            // Validate items exist
-            await this.validateCartItems(cartItems);
+            if (!cartItems || cartItems.length === 0) return 0;
+
+            // 🛡️ Security: Fetch authoritative prices from the database by ID
+            const productIds = cartItems.map(item => item.id);
+            const dbProducts = await productRepository.getByIds(productIds);
+            
+            // Map for quick lookup: { productId: price }
+            const priceMap = {};
+            dbProducts.forEach(p => {
+                priceMap[p.id] = p.current_price;
+            });
 
             const total = cartItems.reduce((sum, item) => {
-                const price = Number(item.price || item.current_price || 0);
-                const quantity = Number(item.quantity || 0);
-                if (price < 0 || quantity < 0) {
-                    throw new Error('Invalid price or quantity');
+                const dbPrice = priceMap[item.id];
+                
+                if (dbPrice === undefined) {
+                    throw new Error(`Product ID ${item.id} not found or inactive`);
                 }
-                return sum + (price * quantity);
+
+                const quantity = Number(item.quantity || 0);
+                if (quantity <= 0) {
+                    throw new Error('Invalid quantity');
+                }
+
+                return sum + (dbPrice * quantity);
             }, 0);
 
             return total;
         } catch (error) {
             console.error('❌ [ProductService] Error calculating total:', error.message);
-            throw new Error('Failed to calculate cart total');
+            throw error;
         }
     }
 }

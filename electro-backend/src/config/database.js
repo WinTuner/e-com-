@@ -2,12 +2,20 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // เชื่อมต่อฐานข้อมูลที่อยู่ที่โฟลเดอร์นอกของ src (ระดับเดียวกับ server.js)
-const dbPath = path.join(__dirname, '../../electro.db');
+const dbPath = process.env.DATABASE_PATH
+    ? path.resolve(__dirname, '../../', process.env.DATABASE_PATH)
+    : path.join(__dirname, '../../electro.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('❌ Error connecting to the database:', err.message);
     } else {
         console.log('✅ Connected to the SQLite database at:', dbPath);
+        
+        // 🚀 Performance: Enable WAL mode for better concurrency
+        db.run('PRAGMA journal_mode = WAL', (err) => {
+            if (err) console.error('⚠️ Failed to enable WAL mode:', err.message);
+            else console.log('🚀 SQLite: WAL mode enabled');
+        });
     }
 });
 
